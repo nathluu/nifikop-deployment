@@ -22,6 +22,46 @@ spec:
           - internalListenerName: http
             port: 8080
         type: ClusterIP
+  sidecarConfigs:
+    - name: app-log
+      image: "busybox:1.32.0"
+      args: [ tail, -n+1, -F, /var/log/nifi-app.log ]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+    - name: bootstrap-log
+      image: "busybox:1.32.0"
+      args: [tail, -n+1, -F, /var/log/nifi-bootstrap.log]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+    - name: user-log
+      image: "busybox:1.32.0"
+      args: [tail, -n+1, -F, /var/log/nifi-user.log]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
   clusterImage: "apache/nifi:1.26.0"
   initContainerImage: "bash:5.2.2"
   oneNifiNodePerNode: false
