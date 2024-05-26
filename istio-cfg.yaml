@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: nifi-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - nifi.trustbase.vn
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: istio-gw-secret
+    hosts:
+    - nifi.trustbase.vn
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nifi-vs
+spec:
+  gateways:
+  - nifi-gateway
+  hosts:
+  - nifi.trustbase.vn
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: simplenifi.nifi.svc.cluster.local
+        port:
+          number: 8080
