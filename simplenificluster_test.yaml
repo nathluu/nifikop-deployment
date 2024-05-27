@@ -67,6 +67,8 @@ spec:
   oneNifiNodePerNode: false
   readOnlyConfig:
     nifiProperties:
+      webProxyHosts:
+        - nifi.tmanet.com:8443
       overrideConfigs: |
         nifi.sensitive.props.key=thisIsABadSensitiveKeyPassword
   pod:
@@ -120,3 +122,9 @@ spec:
       - containerPort: 6342
         type: load-balance
         name: load-balance
+    sslSecrets:
+      tlsSecretName: "simplenifi-tls-secret"
+      create: true
+      issuerRef:
+        name: nifi-
+        kind: Issuer

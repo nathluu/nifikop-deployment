@@ -48,6 +48,7 @@ Deploy NiFi cluster using NiFiKop
 kubectl create ns nifi
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=TMA Inc./CN=certs.tmanet.com' -keyout certs.tmanet.com.key -out certs.tmanet.com.crt
 kubectl create -n nifi secret tls cert-issuer-secret --cert=certs.tmanet.com.crt --key=certs.tmanet.com.key
+kubectl apply -n nifi -f cert-manager-issuer.yaml
 ```
 
 
