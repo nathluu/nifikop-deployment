@@ -18,7 +18,7 @@ spec:
       protocol: HTTPS
     tls:
       mode: SIMPLE
-      credentialName: istio-gw-secret
+      credentialName: gw-credential
     hosts:
     - nifi.tmanet.com
 ---
