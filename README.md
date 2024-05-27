@@ -1,8 +1,8 @@
 ## Procedure
 **Step 1:** Install kubectl, helm, kubelogin, istioctl
 ```bash
-curl -LO https://github.com/istio/istio/releases/download/1.13.8/istioctl-1.13.8-linux-amd64.tar.gz
-tar -xf istioctl-1.13.8-linux-amd64.tar.gz
+curl -LO https://github.com/istio/istio/releases/download/1.22.0/istio-1.22.0-osx-amd64.tar.gz
+tar -xf istio-1.22.0-osx-amd64.tar.gz
 sudo install istioctl /usr/local/bin/
 ``` 
 
@@ -31,19 +31,20 @@ kubectl create -n istio-system secret generic gw-credential --from-file=tls.key=
 
 **Step 5:** Install cert-manager
 # You have to create the namespace before executing following command
+```bash
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 kubectl create namespace cert-manager
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.crds.yaml
 helm install cert-manager --namespace cert-manager --version v1.14.5 jetstack/cert-manager
-
+```
 
 # nifikop-deployment
 Deploy NiFi cluster using NiFiKop
 
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.crds.yaml
-
 # Install nifikop
-
+```bash
+kubectl create ns nifi
 helm install nifikop \
     oci://ghcr.io/konpyutaika/helm-charts/nifikop \
     --namespace=nifi \
@@ -55,12 +56,15 @@ helm install nifikop \
     --set resources.limits.memory=256Mi \
     --set resources.limits.cpu=250m \
     --set namespaces={"nifi"}
+```
 
 # Install zookeeper fro all nifi cluster
+```bash
 helm install zookeeper oci://registry-1.docker.io/bitnamicharts/zookeeper \
 	--namespace=nifi \
 	--set replicaCount=1 \
 	--set networkPolicy.enabled=false
+```
 
 
 
