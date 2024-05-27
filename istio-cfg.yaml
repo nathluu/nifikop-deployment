@@ -11,7 +11,7 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - nifi.trustbase.vn
+    - nifi.tmanet.com
   - port:
       number: 443
       name: https
@@ -20,7 +20,7 @@ spec:
       mode: SIMPLE
       credentialName: istio-gw-secret
     hosts:
-    - nifi.trustbase.vn
+    - nifi.tmanet.com
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -30,7 +30,7 @@ spec:
   gateways:
   - nifi-gateway
   hosts:
-  - nifi.trustbase.vn
+  - nifi.tmanet.com
   http:
   - match:
     - uri:
