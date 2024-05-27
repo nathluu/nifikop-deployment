@@ -1,0 +1,54 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: nifi-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: gw-credential
+    hosts:
+    - nifi.tmanet.com
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nifi-vs
+spec:
+  gateways:
+  - istio-system/nifi-gateway
+  hosts:
+  - nifi.tmanet.com
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: simplenifi.nifi.svc.cluster.local
+        port:
+          number: 8443
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: nifi-dr
+spec:
+  exportTo:
+  - "istio-system"
+  host: simplenifi.nifi.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: __Secure-Authorization-Bearer
+          ttl: 0s

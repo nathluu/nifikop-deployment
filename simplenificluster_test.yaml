@@ -1,0 +1,193 @@
+apiVersion: nifi.konpyutaika.com/v1
+kind: NifiCluster
+metadata:
+  name: simplenifi
+spec:
+  service:
+    headlessEnabled: true
+    labels:
+      cluster-name: simplenifi
+  pod:
+    annotations:
+      sidecar.istio.io/inject: "false"
+  zkAddress: "zookeeper:2181"
+  zkPath: /simplenifi
+  externalServices:
+    - metadata:
+        labels:
+          cluster-name: simplenifi
+      name: simplenifi
+      spec:
+        portConfigs:
+          - internalListenerName: https
+            port: 8443
+        type: ClusterIP
+  sidecarConfigs:
+    - name: app-log
+      image: "busybox:1.32.0"
+      args: [ tail, -n+1, -F, /var/log/nifi-app.log ]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+    - name: bootstrap-log
+      image: "busybox:1.32.0"
+      args: [tail, -n+1, -F, /var/log/nifi-bootstrap.log]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+    - name: user-log
+      image: "busybox:1.32.0"
+      args: [tail, -n+1, -F, /var/log/nifi-user.log]
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+  clusterImage: "apache/nifi:1.26.0"
+  initContainerImage: "bash:5.2.2"
+  oneNifiNodePerNode: false
+  managedAdminUsers:
+    -  identity: "lhtan@tanluu298outlook.onmicrosoft.com"
+       name: "lhtan"
+  readOnlyConfig:
+    nifiProperties:
+      webProxyHosts:
+        - nifi.tmanet.com:443
+        - simplenifi.nifi.svc.cluster.local:8443
+      overrideConfigs: |
+        nifi.sensitive.props.key=thisIsABadSensitiveKeyPassword
+        nifi.security.user.oidc.discovery.url=https://login.microsoftonline.com/94340815-a3fb-4e7c-aab0-bf60c41eea7e/v2.0/.well-known/openid-configuration
+        nifi.security.user.oidc.connect.timeout=15 secs
+        nifi.security.user.oidc.read.timeout=15 secs
+        nifi.security.user.oidc.claim.identifying.user=email
+        nifi.security.user.oidc.additional.scopes=profile
+        nifi.sensitive.props.algorithm=NIFI_PBKDF2_AES_GCM_256
+        nifi.security.identity.mapping.pattern.dn=CN=([^,]*)(?:, (?:O|OU)=.*)?
+        nifi.security.identity.mapping.value.dn=$1
+        nifi.security.identity.mapping.transform.dn=NONE
+  pod:
+    labels:
+      cluster-name: simplenifi
+  nodeConfigGroups:
+    default_group:
+      imagePullPolicy: IfNotPresent
+      isNode: true
+      serviceAccountName: default
+      storageConfigs:
+        - mountPath: "/opt/nifi/nifi-current/logs"
+          name: logs
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/data"
+          name: data
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/nifi-current/conf"
+          name: conf
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 1Gi
+        - mountPath: "/opt/nifi/flowfile_repository"
+          name: "flowfile-repository"
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/content_repository"
+          name: "content-repository"
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/provenance_repository"
+          name: "provenance-repository"
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+      resourcesRequirements:
+        limits:
+          cpu: "1"
+          memory: 2Gi
+        requests:
+          cpu: "1"
+          memory: 2Gi
+  nodes:
+    - id: 1
+      nodeConfigGroup: "default_group"
+    - id: 2
+      nodeConfigGroup: "default_group"
+  propagateLabels: true
+  nifiClusterTaskSpec:
+    retryDurationMinutes: 10
+  listenersConfig:
+    internalListeners:
+      - containerPort: 8443
+        type: https
+        name: https
+      - containerPort: 6007
+        type: cluster
+        name: cluster
+      - containerPort: 10000
+        type: s2s
+        name: s2s
+      - containerPort: 9090
+        type: prometheus
+        name: prometheus
+      - containerPort: 6342
+        type: load-balance
+        name: load-balance
+    sslSecrets:
+      tlsSecretName: "simplenifi-tls-secret"
+      create: true
+      issuerRef:
+        name: nifi-issuer
+        kind: Issuer
