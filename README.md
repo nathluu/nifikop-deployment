@@ -1,8 +1,8 @@
 ## Procedure
 **Step 1:** Install kubectl, helm, kubelogin, istioctl
 ```bash
-curl -LO https://github.com/istio/istio/releases/download/1.20.0/istioctl-1.20.0-linux-amd64.tar.gz
-tar -xf istioctl-1.20.0-linux-amd64.tar.gz
+curl -LO https://github.com/istio/istio/releases/download/1.22.0/istioctl-1.22.0-linux-amd64.tar.gz
+tar -xf istioctl-1.22.0-linux-amd64.tar.gz
 sudo install istioctl /usr/local/bin/
 ``` 
 
