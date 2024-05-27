@@ -126,5 +126,5 @@ spec:
       tlsSecretName: "simplenifi-tls-secret"
       create: true
       issuerRef:
-        name: nifi-
+        name: nifi-issuer
         kind: Issuer
