@@ -68,7 +68,8 @@ spec:
   readOnlyConfig:
     nifiProperties:
       webProxyHosts:
-        - nifi.tmanet.com:8443
+        - nifi.tmanet.com:443
+        - simplenifi.nifi.svc.cluster.local:8443
       overrideConfigs: |
         nifi.sensitive.props.key=thisIsABadSensitiveKeyPassword
   pod:
