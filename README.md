@@ -42,9 +42,18 @@ helm install cert-manager --namespace cert-manager --version v1.14.5 jetstack/ce
 # nifikop-deployment
 Deploy NiFi cluster using NiFiKop
 
-# Install nifikop
+
+**Step 6:** Create cert-manager Issuer
 ```bash
 kubectl create ns nifi
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=TMA Inc./CN=certs.tmanet.com' -keyout certs.tmanet.com.key -out certs.tmanet.com.crt
+kubectl create -n nifi secret tls cert-issuer-secret --cert=certs.tmanet.com.crt --key=certs.tmanet.com.key
+```
+
+
+
+# Install nifikop
+```bash
 helm install nifikop \
     oci://ghcr.io/konpyutaika/helm-charts/nifikop \
     --namespace=nifi \
