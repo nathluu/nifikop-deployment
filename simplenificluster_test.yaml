@@ -65,13 +65,24 @@ spec:
   clusterImage: "apache/nifi:1.26.0"
   initContainerImage: "bash:5.2.2"
   oneNifiNodePerNode: false
+  managedAdminUsers:
+    -  identity: "lhtan@tanluu298outlook.onmicrosoft.com"
+       name: "lhtan"
   readOnlyConfig:
     nifiProperties:
       webProxyHosts:
         - nifi.tmanet.com:443
         - simplenifi.nifi.svc.cluster.local:8443
       overrideConfigs: |
-        nifi.sensitive.props.key=thisIsABadSensitiveKeyPassword
+        nifi.security.user.oidc.discovery.url=https://login.microsoftonline.com/94340815-a3fb-4e7c-aab0-bf60c41eea7e/v2.0/.well-known/openid-configuration
+        nifi.security.user.oidc.connect.timeout=15 secs
+        nifi.security.user.oidc.read.timeout=15 secs
+        nifi.security.user.oidc.claim.identifying.user=email
+        nifi.security.user.oidc.additional.scopes=profile
+        nifi.sensitive.props.algorithm=NIFI_PBKDF2_AES_GCM_256
+        nifi.security.identity.mapping.pattern.dn=CN=([^,]*)(?:, (?:O|OU)=.*)?
+        nifi.security.identity.mapping.value.dn=$1
+        nifi.security.identity.mapping.transform.dn=NONE
   pod:
     labels:
       cluster-name: simplenifi
