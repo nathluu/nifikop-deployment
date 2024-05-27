@@ -1,8 +1,8 @@
 ## Procedure
 **Step 1:** Install kubectl, helm, kubelogin, istioctl
 ```bash
-curl -LO https://github.com/istio/istio/releases/download/1.22.0/istio-1.22.0-osx-amd64.tar.gz
-tar -xf istio-1.22.0-osx-amd64.tar.gz
+curl -LO https://github.com/istio/istio/releases/download/1.20.0/istioctl-1.20.0-linux-amd64.tar.gz
+tar -xf istioctl-1.20.0-linux-amd64.tar.gz
 sudo install istioctl /usr/local/bin/
 ``` 
 
@@ -77,4 +77,9 @@ helm install zookeeper oci://registry-1.docker.io/bitnamicharts/zookeeper \
 ```
 
 
-
+# Deploy nifi cluster
+```bash
+kubectl config set-context --current --namespace=nifi
+kubectl apply -f simplenificluster_test.yaml
+kubectl apply -f istio-cfg.yaml
+```
