@@ -6,12 +6,6 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  # - port:
-  #     number: 80
-  #     name: http
-  #     protocol: HTTP
-  #   hosts:
-  #   - nifi.tmanet.com
   - port:
       number: 443
       name: https
@@ -39,4 +33,19 @@ spec:
     - destination:
         host: simplenifi.nifi.svc.cluster.local
         port:
-          number: 8080
+          number: 8443
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: nifi-dr
+spec:
+  host: simplenifi.nifi.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+    loadBalancer:
+      consistentHash:
+        httpCookie:
+          name: __Secure-Authorization-Bearer
+          ttl: 0s
