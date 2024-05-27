@@ -89,7 +89,57 @@ spec:
             storageClassName: "default"
             resources:
               requests:
-                storage: 10Gi
+                storage: 4Gi
+        - mountPath: "/opt/nifi/data"
+          name: data
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/nifi-current/conf"
+          name: conf
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 1Gi
+        - mountPath: "/opt/nifi/flowfile_repository"
+          name: "flowfile-repository"
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/content_repository"
+          name: "content-repository"
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
+        - mountPath: "/opt/nifi/provenance_repository"
+          name: "provenance-repository"
+          reclaimPolicy: Delete
+          pvcSpec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: "default"
+            resources:
+              requests:
+                storage: 4Gi
       resourcesRequirements:
         limits:
           cpu: "1"
