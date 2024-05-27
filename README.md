@@ -85,4 +85,4 @@ kubectl apply -f istio-cfg.yaml
 ```
 
 NOTES:
-It seems istio v1.22.0 has issue with destination rule TLS SIMPLE
+Istio v1.22.0 has new option "insecureSkipVerify" with destination rule TLS mode SIMPLE to explicitly skip CA verification
