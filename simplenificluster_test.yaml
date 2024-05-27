@@ -19,8 +19,8 @@ spec:
       name: simplenifi
       spec:
         portConfigs:
-          - internalListenerName: http
-            port: 8080
+          - internalListenerName: https
+            port: 8443
         type: ClusterIP
   sidecarConfigs:
     - name: app-log
@@ -107,9 +107,9 @@ spec:
     retryDurationMinutes: 10
   listenersConfig:
     internalListeners:
-      - containerPort: 8080
-        type: http
-        name: http
+      - containerPort: 8443
+        type: https
+        name: https
       - containerPort: 6007
         type: cluster
         name: cluster
