@@ -83,3 +83,6 @@ kubectl config set-context --current --namespace=nifi
 kubectl apply -f simplenificluster_test.yaml
 kubectl apply -f istio-cfg.yaml
 ```
+
+NOTES:
+It seems istio v1.22.0 has issue with destination rule TLS SIMPLE
